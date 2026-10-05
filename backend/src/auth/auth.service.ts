@@ -36,11 +36,13 @@ export interface LoginArgs {
 }
 
 /**
- * Auth flows: signup (first user → ADMIN, otherwise self-service VENDOR), login, logout.
+ * Auth flows: signup (self-signup → VENDOR), login, logout.
  *
- * Password hashing uses bcryptjs (cost 10, OWASP-acceptable baseline). The choice
- * to count *all* users (not just admins) when deciding the bootstrap admin
- * role matches the auth_model 'full_auth' contract documented in the plan.
+ * Password hashing uses bcryptjs (cost 10, OWASP-acceptable baseline).
+ * Self-service sign-up is open: every registrant receives role VENDOR.
+ * An admin account must be seeded directly (COLOSSUS_ACCOUNTS_JSON) — the
+ * first-user-becomes-ADMIN bootstrap was removed to prevent a stranger from
+ * claiming admin on a fresh database.
  */
 @Injectable()
 export class AuthService {
@@ -156,14 +158,11 @@ export class AuthService {
       throw new BadRequestException('password must be at least 8 characters');
     }
 
-    const count = await this.prisma.runAsAdmin((tx) => tx.user.count());
-    const isBootstrap = count === 0;
-
     // Self-service signup is open: no registration token is required. A token,
     // when supplied, is still claimed so its model grant applies.
     let grantedModelIds: string[] = [];
     const rawToken = args.registrationToken?.trim().toLowerCase();
-    const usesToken = !isBootstrap && !!rawToken;
+    const usesToken = !!rawToken;
     if (usesToken && rawToken) {
       const claimed = await this.claimRegistrationToken(rawToken);
       if (!claimed) {
@@ -174,12 +173,8 @@ export class AuthService {
       grantedModelIds = claimed.grantedModelIds;
     }
 
-    // Bootstrap → ADMIN; invited (token) → USER; self-service → VENDOR.
-    const role: UserRole = isBootstrap
-      ? UserRole.ADMIN
-      : usesToken
-        ? UserRole.USER
-        : UserRole.VENDOR;
+    // Every self-service signup receives the least-privileged role: VENDOR.
+    const role: UserRole = UserRole.VENDOR;
     const passwordHash = await bcrypt.hash(args.password, 10);
 
     let user: User;
