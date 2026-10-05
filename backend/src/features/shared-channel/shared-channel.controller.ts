@@ -20,14 +20,14 @@ export class SharedChannelController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @Roles(UserRole.VENDOR)
+  @Roles(UserRole.VENDOR, UserRole.USER, UserRole.MANAGER, UserRole.ADMIN)
   async postApiChannels(@Req() req: Request, @Body() body: PostApiChannelsRequestDto) {
     return this.sharedchannel.createChannel(this.actor(req), body?.name);
   }
 
   @Post(':id/messages')
   @HttpCode(HttpStatus.CREATED)
-  @Roles(UserRole.VENDOR, UserRole.CUSTOMER)
+  @Roles(UserRole.VENDOR, UserRole.CUSTOMER, UserRole.USER, UserRole.MANAGER, UserRole.ADMIN)
   async postApiChannelsIdMessages(
     @Req() req: Request,
     @Param('id') id: string,
@@ -37,7 +37,7 @@ export class SharedChannelController {
   }
 
   @Get()
-  @Roles(UserRole.VENDOR, UserRole.CUSTOMER)
+  @Roles(UserRole.VENDOR, UserRole.CUSTOMER, UserRole.USER, UserRole.MANAGER, UserRole.ADMIN)
   async getApiChannels(@Req() req: Request) {
     return this.sharedchannel.listChannels(this.actor(req));
   }

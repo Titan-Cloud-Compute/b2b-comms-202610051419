@@ -89,11 +89,22 @@ export class ChannelsComponent implements OnInit {
       this.newName = '';
       if (ch?.id) this.channels.update((list) => [ch, ...list.filter((c) => c.id !== ch.id)]);
       await this.load();
-    } catch {
-      this.error.set('Could not create channel.');
+      if (ch?.id) {
+        if (!this.channels().some((c) => c.id === ch.id)) this.channels.update((list) => [ch, ...list]);
+        this.select(ch);
+      }
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Could not create channel.'));
     } finally {
       this.busy.set(false);
     }
+  }
+
+  private errorMessage(err: unknown, fallback: string): string {
+    const e = err as { error?: { message?: unknown }; message?: unknown } | null;
+    const msg = e?.error?.message ?? e?.message;
+    if (Array.isArray(msg)) return msg.join(', ') || fallback;
+    return typeof msg === 'string' && msg ? msg : fallback;
   }
 
   select(ch: Channel): void {
