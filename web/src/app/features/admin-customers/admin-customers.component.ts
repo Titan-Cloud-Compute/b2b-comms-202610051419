@@ -18,16 +18,16 @@ interface InviteResponse {
   standalone: true,
   imports: [FormsModule],
   template: `
-    <div data-testid="admin-customers-screen">
-      <h1>Customer Management</h1>
+    <div class="page admin-customers-page" data-testid="admin-customers-screen">
+      <h1 class="page-title">Customer Management</h1>
       <p>Invite a customer by email. On success, a Customer record is created and returns 201 with invitationSent true.
         Inviting an email that is already registered is rejected: the response returns 409 error indicating the customer already exists.</p>
 
-      <form data-testid="customer-invite-form" (ngSubmit)="invite()">
-        <label for="invite-email">Customer email</label>
-        <input id="invite-email" data-testid="customer-invite-email" type="email" name="email"
+      <form class="form-stack" data-testid="customer-invite-form" (ngSubmit)="invite()">
+        <label class="form-label" for="invite-email">Customer email</label>
+        <input class="form-control" id="invite-email" data-testid="customer-invite-email" type="email" name="email"
                [(ngModel)]="email" required />
-        <button type="submit" data-testid="customer-invite-submit" [disabled]="busy">Invite</button>
+        <button class="btn btn-primary" type="submit" data-testid="customer-invite-submit" [disabled]="busy">Invite</button>
       </form>
 
       @if (message) {
@@ -37,7 +37,7 @@ interface InviteResponse {
         <p data-testid="customer-invite-error" role="alert">{{ error }}</p>
       }
 
-      <h2>Customers</h2>
+      <h2 class="section-title">Customers</h2>
       <ul data-testid="customer-list">
         @for (c of customers; track c.id) {
           <li>{{ c.email }}</li>

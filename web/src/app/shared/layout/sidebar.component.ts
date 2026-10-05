@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { SafeHtmlPipe } from '../safe-html.pipe';
 import { AuthApi } from '../api/auth-api.service';
-import { FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_MAP } from './nav-items';
+import { FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_MAP, GROUPED_NAV_ITEMS, NavGroup } from './nav-items';
 import { SIDEBAR_TEMPLATE } from './sidebar.template';
 
 @Component({
@@ -15,7 +15,7 @@ import { SIDEBAR_TEMPLATE } from './sidebar.template';
   styles: [`
     .sidebar {
       width: 260px;
-      background: white;
+      background: var(--color-surface);
       border-right: 1px solid var(--color-border);
       display: flex;
       flex-direction: column;
@@ -37,14 +37,18 @@ import { SIDEBAR_TEMPLATE } from './sidebar.template';
       border-bottom: 1px solid var(--color-border);
     }
 
+    .logo { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--color-primary-light); }
+    .logo-img { width: 24px; height: 24px; }
+
     .logo-text {
       display: flex;
       flex-direction: column;
     }
 
     .logo-title {
+      font-family: var(--font-display);
       font-weight: 700;
-      color: var(--color-text-primary);
+      color: var(--color-primary);
       font-size: var(--font-size-lg);
     }
 
@@ -202,7 +206,7 @@ import { SIDEBAR_TEMPLATE } from './sidebar.template';
     }
 
     .lang-btn.active {
-      background: white;
+      background: var(--color-surface);
       color: var(--color-primary);
       box-shadow: var(--shadow-card);
     }
@@ -218,7 +222,7 @@ import { SIDEBAR_TEMPLATE } from './sidebar.template';
     }
 
     .lang-btn.active:disabled:hover {
-      background: white;
+      background: var(--color-surface);
       color: var(--color-primary);
     }
 
@@ -284,7 +288,7 @@ import { SIDEBAR_TEMPLATE } from './sidebar.template';
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: var(--color-on-primary);
       font-weight: 600;
       font-size: var(--font-size-sm);
       flex-shrink: 0;
@@ -382,6 +386,11 @@ export class SidebarComponent {
   openSettings = output<void>();
 
   readonly firmNavItems = FIRM_NAV_ITEMS;
+  /** Card nav groups, in display order: 'Vendor', 'Customer', 'Admin'. */
+  readonly navGroupOrder: NavGroup[] = ['Vendor', 'Customer', 'Admin'];
+  readonly groupedNavItems = this.navGroupOrder
+    .map(g => GROUPED_NAV_ITEMS.find(x => x.group === g))
+    .filter((x): x is (typeof GROUPED_NAV_ITEMS)[number] => !!x);
   readonly adminNavItems = ADMIN_NAV_ITEMS;
   // Rendered for every role (see SHARED_NAV_ITEMS) — outside the role branches.
   readonly sharedNavItems = SHARED_NAV_ITEMS;

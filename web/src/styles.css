@@ -59,7 +59,7 @@ body {
   background: var(--color-bg-secondary);
   color: var(--color-text-primary);
   line-height: 1.5;
-  font-size: 15px;
+  font-size: var(--font-size-base);
   min-height: 100svh;
   min-height: 100vh;
   overscroll-behavior-y: contain;
@@ -265,4 +265,209 @@ body:has(app-intake .chat-window) app-root > app-intake > .intake-page {
 
 body:has(app-intake .chat-window) app-root > app-support-footer {
   flex: 0 0 auto;
+}
+
+/* ── Shared page primitives (styling card 2026-10-05) ───────────────────────
+ * Token-only building blocks used by every feature page: page header, card,
+ * data table, form field, button, status badge, empty state, plus the
+ * ChannelList / OrderQueue / InvoiceViewer components.                       */
+.page {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.page > * { min-width: 0; }
+.page-header { display: flex; flex-direction: column; gap: var(--space-1); }
+.page-title,
+.page h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  color: var(--color-primary);
+}
+.page-subtitle { margin: 0; color: var(--color-text-secondary); }
+.page-notes {
+  margin: 0;
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-8);
+  background: var(--color-primary-light);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.section-title,
+.page h2 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  min-width: 0;
+}
+.card > p:first-child,
+.card > p:last-child { margin-bottom: 0; }
+
+.form-stack { display: flex; flex-direction: column; gap: var(--space-3); max-width: 560px; }
+.form-inline { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3); }
+.form-inline .form-control { flex: 1 1 220px; }
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+.form-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+.form-control {
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-input);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.form-control:focus { outline: none; border-color: var(--color-accent); box-shadow: var(--shadow-focus); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+}
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
+.btn-primary:hover:not(:disabled) { background: var(--color-primary-hover); }
+.btn-secondary { background: var(--color-surface); color: var(--color-primary); border-color: var(--color-primary-border); }
+.btn-secondary:hover:not(:disabled) { background: var(--color-primary-light); }
+
+.alert { margin: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-size: var(--font-size-sm); }
+.alert-error { background: var(--color-error-bg); color: var(--color-error); }
+.alert-success { background: var(--color-success-bg); color: var(--color-success); }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: capitalize;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+.status-badge[data-status="confirmed"],
+.status-badge[data-status="paid"] { background: var(--color-success-bg); color: var(--color-success); }
+
+.empty-state {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  list-style: none;
+}
+
+/* Data table — works for <table> and for list-based tables (<ul class="data-table">). */
+.data-table {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+}
+.data-table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.data-table td { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--color-border-light); }
+.data-table > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border-light);
+}
+.data-table > li:first-child { border-top: none; }
+
+/* ChannelList — sidebar list of channels next to the message thread. */
+.channel-layout { display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+.channel-list {
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-card);
+}
+.channel-list-button {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.channel-list-button::before { content: "# "; color: var(--color-text-muted); }
+.channel-list-button:hover { background: var(--color-surface-hover); }
+.channel-list-button[aria-pressed="true"] { background: var(--color-primary-light); color: var(--color-primary); font-weight: var(--font-weight-semibold); }
+.channel-thread { display: flex; flex-direction: column; gap: var(--space-3); }
+.message-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
+.message-item { padding: var(--space-2) var(--space-3); background: var(--color-bg-secondary); border-radius: var(--radius-md); }
+
+/* OrderQueue + InvoiceViewer line items. */
+.order-queue > li .form-control { width: auto; flex: 0 1 180px; }
+.invoice-viewer > li { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 768px) {
+  .page { padding: var(--space-4) var(--space-4) var(--space-8); gap: var(--space-4); }
+  .card { padding: var(--space-4); }
+  .channel-layout { grid-template-columns: minmax(0, 1fr); }
+  .data-table { display: block; overflow-x: auto; }
+  .form-stack { max-width: none; }
+  .btn { width: 100%; }
+  .form-inline .btn { width: auto; }
 }

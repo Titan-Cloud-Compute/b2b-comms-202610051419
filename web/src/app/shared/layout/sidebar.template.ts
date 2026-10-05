@@ -2,14 +2,11 @@ export const SIDEBAR_TEMPLATE = `
     <aside class="sidebar" [class.mobile-open]="mobileOpen()">
       <div class="sidebar-header">
         <div class="logo">
-          <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-            <rect width="48" height="48" rx="12" style="fill: var(--color-primary)"/>
-            <path d="M14 24L22 32L34 16" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <img class="logo-img" src="brand/logo.svg" alt="" width="32" height="32" />
         </div>
         <div class="logo-text">
-          <span class="logo-title">{{ 'Platform' }}</span>
-          <span class="logo-subtitle">{{ 'SME Programme' }}</span>
+          <span class="logo-title">{{ 'B2B Workspace' }}</span>
+          <span class="logo-subtitle">{{ 'Vendor & Customer Portal' }}</span>
         </div>
       </div>
 
@@ -22,7 +19,7 @@ export const SIDEBAR_TEMPLATE = `
 
       <nav class="sidebar-nav">
         @if (!auth.hasAdminRole()) {
-          <div class="nav-group-label">{{ 'Workspace' }}</div>
+          <div class="nav-group-label">{{ 'Main' }}</div>
           @for (item of firmNavItems; track item.label) {
             <a
               [routerLink]="item.path"
@@ -54,10 +51,29 @@ export const SIDEBAR_TEMPLATE = `
           }
         }
 
+        <!-- Card nav groups (Vendor, Customer, Admin): rendered for every
+             signed-in role, routes unchanged. -->
+        @for (group of groupedNavItems; track group.group) {
+          <div class="nav-group-label">{{ group.group }}</div>
+          @for (item of group.items; track item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              class="nav-item"
+              (click)="navClick.emit()"
+            >
+              <span class="nav-icon" [innerHTML]="item.icon | safeHtml"></span>
+              <span class="nav-label">{{ item.label }}</span>
+            </a>
+          }
+        }
+
         <!-- Role-agnostic entries (saved searches): every signed-in user owns
              their own saved searches, so this group renders outside both role
              branches above. -->
-        <div class="nav-group-label">{{ 'Personal' }}</div>
+        @if (sharedNavItems.length) {
+          <div class="nav-group-label">{{ 'Personal' }}</div>
+        }
         @for (item of sharedNavItems; track item.label) {
           <a
             [routerLink]="item.path"

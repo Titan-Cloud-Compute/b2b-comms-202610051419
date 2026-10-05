@@ -19,21 +19,21 @@ export const DISABLED_MSG = 'the preferences are updated with both alert fields 
   standalone: true,
   imports: [FormsModule],
   template: `
-    <div data-testid="settings-notifications-screen">
-      <h1>Notification Settings</h1>
+    <div class="page notification-settings-page" data-testid="settings-notifications-screen">
+      <h1 class="page-title">Notification Settings</h1>
 
-      <form (ngSubmit)="save()">
-        <label>
+      <form class="form-stack" (ngSubmit)="save()">
+        <label class="form-label">
           <input type="checkbox" data-testid="order-alerts-toggle" name="orderAlerts"
                  [(ngModel)]="orderAlerts" />
           Order alerts
         </label>
-        <label>
+        <label class="form-label">
           <input type="checkbox" data-testid="message-alerts-toggle" name="messageAlerts"
                  [(ngModel)]="messageAlerts" />
           Message alerts
         </label>
-        <button type="submit" data-testid="save-notification-preferences" [disabled]="saving">
+        <button class="btn btn-primary" type="submit" data-testid="save-notification-preferences" [disabled]="saving">
           Save
         </button>
       </form>

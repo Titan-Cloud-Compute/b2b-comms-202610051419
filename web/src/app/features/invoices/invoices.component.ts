@@ -5,8 +5,8 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-    <div data-testid="invoices-screen">
-      <h1>Invoices</h1>
+    <div class="page invoice-viewer-page" data-testid="invoices-screen">
+      <h1 class="page-title">Invoices</h1>
       <p>invoice list and generator</p>
     </div>
   `,

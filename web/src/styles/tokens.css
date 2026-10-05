@@ -4,25 +4,25 @@
 /* Never use raw hex (#...), rgb(), or named colors (red, navy, etc.) in         */
 /* component files. Use the nearest token instead.                               */
 :root {
-  --color-primary: #163e8c;
-  --color-primary-rgb: 22, 62, 140; /* for rgba(var(--color-primary-rgb), a) alpha tints */
-  --color-primary-hover: #10306e;
-  --color-primary-light: #e9eef9;
-  --color-primary-border: #163e8c33;
-  --color-accent: #b3364a;
-  --color-accent-hover: #92293b;
-  --color-accent-light: #f8e7ea;
+  --color-primary: #481a54;
+  --color-primary-rgb: 72, 26, 84; /* for rgba(var(--color-primary-rgb), a) alpha tints */
+  --color-primary-hover: #3a1444;
+  --color-primary-light: #f9edff;
+  --color-primary-border: #481a5433;
+  --color-accent: #730394;
+  --color-accent-hover: #5c0276;
+  --color-accent-light: #f9f0ff;
   --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f6f8fb;
-  --color-bg-tertiary: #eceff5;
+  --color-bg-secondary: #f9f0ff;
+  --color-bg-tertiary: #f9edff;
   --color-surface: #ffffff;
-  --color-surface-hover: #f6f8fb;
-  --color-text-primary: #101828;
+  --color-surface-hover: #f9f0ff;
+  --color-text-primary: #000000;
   --color-text-secondary: #55627a;
   --color-text-tertiary: #75819a;
   --color-text-muted: #9aa4b8;
-  --color-success: #137d4e;
-  --color-success-bg: #e3f5ec;
+  --color-success: #2e844a;
+  --color-success-bg: #e6f4ea;
   --color-warning: #b9710a;
   --color-warning-bg: #fdf3e3;
   --color-error: #b32531;
@@ -32,7 +32,7 @@
   --shadow-sm: 0 1px 2px rgba(14, 23, 38, 0.06);
   --shadow-md: 0 4px 12px rgba(14, 23, 38, 0.08);
   --shadow-lg: 0 12px 28px rgba(14, 23, 38, 0.12);
-  --radius-sm: 6px;
+  --radius-sm: 4px;
   --radius-md: 10px;
   --radius-lg: 16px;
 }
@@ -40,13 +40,13 @@
 /* ---- Extended palette (T1 tokenize, 2026-09-05): exact values previously hardcoded in components.
    Ramps: neutral/gray/info/success/warning/error/highlight/accent + on-primary text. Re-palette here only. ---- */
 :root {
-  --color-primary-600: #1a4699;
-  --color-primary-900: #0f2757;
-  --color-primary-border-soft: #d4dfef;
+  --color-primary-600: #730394;
+  --color-primary-900: #2c0f34;
+  --color-primary-border-soft: #e9d4f2;
   --color-on-primary: #ffffff;
-  --color-on-primary-soft: #e6ecf7;
-  --color-on-primary-muted: #b7c6e6;
-  --color-on-primary-faint: #8ea3cf;
+  --color-on-primary-soft: #f3e6f7;
+  --color-on-primary-muted: #d2b7dc;
+  --color-on-primary-faint: #a98bb3;
   --color-neutral-50: #f7f9fc;
   --color-neutral-100: #eef2f7;
   --color-neutral-200: #e2e8f0;
@@ -122,10 +122,40 @@
   --color-white: #ffffff;
 }
 
-/* ---- Typography (rebrand 2026-09-05): Sofia Sans (Cyrillic-first display) + Inter (body), loaded in index.html ---- */
+/* ---- Typography (brand 2026-10-05): Salesforce-Avant-Garde (display) + Salesforce-Sans (body) ---- */
 :root {
-  --font-display: "Sofia Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-body: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: Salesforce-Avant-Garde, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-body: Salesforce-Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-size-base: 0.9375rem;
+  --line-height-base: 1.5;
+  --line-height-tight: 1.25;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+/* ---- Spacing scale + overlays (styling card 2026-10-05) ---- */
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --topbar-h: 56px;
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-soft: rgba(0, 0, 0, 0.4);
+  --color-overlay-strong: rgba(14, 23, 38, 0.6);
+  --color-overlay-modal: rgba(14, 23, 38, 0.45);
+  --color-on-dark-strong: rgba(255, 255, 255, 0.85);
+  --color-on-dark-muted: rgba(255, 255, 255, 0.7);
+  --color-on-dark-faint: rgba(255, 255, 255, 0.4);
+  --color-on-dark-border: rgba(255, 255, 255, 0.28);
+  --color-on-dark-tint: rgba(255, 255, 255, 0.14);
 }
 
 /* ---- Chat surfaces + pill radius (moved here from styles.css during the 2026-09-05 rebrand) ---- */

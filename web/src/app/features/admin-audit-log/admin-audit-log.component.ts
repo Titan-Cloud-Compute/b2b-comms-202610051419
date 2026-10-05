@@ -15,16 +15,16 @@ export interface AuditEntry {
   standalone: true,
   imports: [FormsModule],
   template: `
-    <div data-testid="admin-audit-log-screen">
-      <h1>Audit Log</h1>
+    <div class="page audit-log-page" data-testid="admin-audit-log-screen">
+      <h1 class="page-title">Audit Log</h1>
 
-      <section>
+      <section class="card">
         <p>When the admin opens the audit log section, a list of AuditEntry records is displayed in chronological order returns 200.</p>
         <p>When the system records an action in the audit log, the AuditEntry is stored and returns 201 with the created record.</p>
       </section>
 
       @if (error()) {
-        <p role="alert">{{ error() }}</p>
+        <p class="alert alert-error" role="alert">{{ error() }}</p>
       }
 
       <div data-testid="audit-log-list">
@@ -33,7 +33,7 @@ export interface AuditEntry {
         } @else if (entries().length === 0) {
           <p>No audit entries yet.</p>
         } @else {
-          <table>
+          <table class="data-table">
             <thead>
               <tr><th>Action</th><th>User</th><th>Created</th></tr>
             </thead>
@@ -50,10 +50,10 @@ export interface AuditEntry {
         }
       </div>
 
-      <form data-testid="audit-log-record-form" (ngSubmit)="record()">
-        <label>Action <input name="action" [(ngModel)]="action" required /></label>
-        <label>User id <input name="userId" [(ngModel)]="userId" required /></label>
-        <button type="submit" [disabled]="saving() || !action || !userId">Record entry</button>
+      <form class="form-stack" data-testid="audit-log-record-form" (ngSubmit)="record()">
+        <label class="form-label">Action <input class="form-control" name="action" [(ngModel)]="action" required /></label>
+        <label class="form-label">User id <input class="form-control" name="userId" [(ngModel)]="userId" required /></label>
+        <button class="btn btn-primary" type="submit" [disabled]="saving() || !action || !userId">Record entry</button>
       </form>
       @if (lastCreated()) {
         <p>Recorded "{{ lastCreated()!.action }}" at {{ lastCreated()!.createdAt }}.</p>

@@ -6,7 +6,7 @@ import { SafeHtmlPipe } from './safe-html.pipe';
 import { AuthApi } from './api/auth-api.service';
 import { SidebarComponent } from './layout/sidebar.component';
 import { AccountModalComponent } from './layout/account-modal.component';
-import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_MAP } from './layout/nav-items';
+import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_MAP, GROUPED_NAV_ITEMS } from './layout/nav-items';
 
 @Component({
   selector: 'app-layout',
@@ -68,6 +68,11 @@ import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_M
 
       <!-- Main Content -->
       <main class="main-content">
+        <!-- Desktop top bar (the mobile header above takes over on narrow viewports). -->
+        <header class="app-topbar" data-testid="app-topbar">
+          <img class="app-topbar-logo" src="brand/logo.svg" alt="" width="24" height="24" />
+          <span class="app-topbar-title">{{ headerTitle() }}</span>
+        </header>
         <!-- The routed page lives in a wrapper that carries this component's
              style-encapsulation attribute, so the shell can actually give it
              the leftover vertical space (a rule targeting the routed host
@@ -126,6 +131,28 @@ import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_M
       background: var(--color-bg-secondary);
     }
 
+    /* Desktop top bar */
+    .app-topbar {
+      position: sticky;
+      top: var(--imp-h, 0px);
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      min-height: var(--topbar-h);
+      padding: 0 var(--space-6);
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      box-shadow: var(--shadow-nav);
+    }
+    .app-topbar-logo { width: 24px; height: 24px; flex: none; }
+    .app-topbar-title {
+      font-family: var(--font-display);
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-md);
+      color: var(--color-primary);
+    }
+
     /* Mobile Header */
     .mobile-header {
       display: none;
@@ -134,7 +161,7 @@ import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_M
       left: 0;
       right: 0;
       height: 56px;
-      background: white;
+      background: var(--color-surface);
       border-bottom: 1px solid var(--color-border);
       padding: 0 1rem;
       align-items: center;
@@ -187,7 +214,7 @@ import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_M
     }
 
     .mobile-lang-btn.active {
-      background: white;
+      background: var(--color-surface);
       color: var(--color-primary);
       box-shadow: var(--shadow-card);
     }
@@ -273,7 +300,7 @@ import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_M
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: var(--color-overlay);
       z-index: 150;
     }
 
@@ -285,7 +312,7 @@ import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_M
       left: 0;
       right: 0;
       height: 64px;
-      background: white;
+      background: var(--color-surface);
       border-top: 1px solid var(--color-border);
       padding-bottom: env(safe-area-inset-bottom);
       z-index: 100;
@@ -321,6 +348,7 @@ import { NavItem, FIRM_NAV_ITEMS, ADMIN_NAV_ITEMS, SHARED_NAV_ITEMS, ADMIN_TAB_M
     /* Mobile Styles */
     @media (max-width: 768px) {
       .mobile-header { display: flex; }
+      .app-topbar { display: none; }
       .mobile-overlay { display: block; }
 
       .main-content {
@@ -419,7 +447,7 @@ export class LayoutComponent implements OnInit {
   bottomNavItems = computed<NavItem[]>(() => {
     if (this.auth.hasAdminRole()) return [...ADMIN_NAV_ITEMS, ...SHARED_NAV_ITEMS];
     // Firm users (mobile): Chat, Documents, Learning, Analysis (skip Overview)
-    return [...FIRM_NAV_ITEMS.slice(0, 4), ...SHARED_NAV_ITEMS];
+    return [...[...FIRM_NAV_ITEMS, ...GROUPED_NAV_ITEMS.flatMap(g => g.items)].slice(0, 4), ...SHARED_NAV_ITEMS];
   });
 
   toggleMobileMenu() { this.mobileMenuOpen.update(v => !v); }
