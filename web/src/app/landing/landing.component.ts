@@ -8,7 +8,10 @@ import { RouterLink } from '@angular/router';
   template: `
     <div class="landing-page" data-testid="landing-page">
       <header class="landing-header">
-        <span class="landing-brand">Workspace Portal</span>
+        <span class="landing-brand" data-testid="landing-brand">
+          <img src="brand/logo.svg" alt="" class="landing-logo" width="32" height="32" />
+          Workspace Portal
+        </span>
         <nav class="landing-auth">
           <a routerLink="/signup" class="link-secondary" data-testid="landing-signup">Sign up</a>
           <a routerLink="/login" class="link-secondary" data-testid="landing-signin">Sign in</a>
@@ -36,6 +39,14 @@ import { RouterLink } from '@angular/router';
           <a routerLink="/invoices" class="btn-outline" data-testid="landing-cta-customer">Track Invoices</a>
         </section>
       </main>
+
+      <footer class="landing-footer" data-testid="landing-footer">
+        <span>&copy; Vendor and Customer Workspace Portal</span>
+        <nav class="landing-footer-links">
+          <a routerLink="/terms" class="link-secondary">Terms</a>
+          <a routerLink="/privacy" class="link-secondary">Privacy</a>
+        </nav>
+      </footer>
     </div>
   `,
   styles: [`
@@ -56,8 +67,33 @@ import { RouterLink } from '@angular/router';
       border-bottom: 1px solid var(--color-border);
     }
     .landing-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       font-weight: 700;
       color: var(--color-primary);
+    }
+    .landing-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+    .landing-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: auto;
+      padding: 1rem 1.5rem;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+    }
+    .landing-footer-links {
+      display: flex;
+      gap: 1rem;
     }
     .landing-auth {
       display: flex;
