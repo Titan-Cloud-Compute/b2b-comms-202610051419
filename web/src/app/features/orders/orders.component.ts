@@ -1,14 +1,2 @@
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-orders',
-  standalone: true,
-  imports: [],
-  template: `
-    <div data-testid="orders-screen">
-      <h1>Orders</h1>
-      <p>order list and purchase form</p>
-    </div>
-  `,
-})
-export class OrdersComponent {}
+// The /orders screen is implemented by the order-management feature.
+export { OrderManagementComponent as OrdersComponent } from '../order-management/order-management.component';
