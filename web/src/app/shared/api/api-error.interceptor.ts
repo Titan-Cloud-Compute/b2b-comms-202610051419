@@ -4,10 +4,11 @@ import {
   HttpInterceptorFn,
 } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { catchError, from, switchMap, throwError } from 'rxjs';
 import { ToastService } from './toast.service';
 import { AuthService } from '../auth.service';
 import { SKIP_AUTH_REDIRECT } from './api-client.service';
+import { SessionGate } from './session-gate.service';
 
 /**
  * Global HTTP interceptor for cross-cutting auth/availability concerns.
@@ -34,6 +35,10 @@ export const apiErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const toast = inject(ToastService);
   const auth = inject(AuthService);
+  const gate = inject(SessionGate);
+  // Session epoch at send time: if a login/signup succeeds after this
+  // request went out, a 401 on it is stale and the request is retried.
+  const sentAtEpoch = gate.epoch;
 
   return next(req).pipe(
     catchError((err: unknown) => {
@@ -61,18 +66,28 @@ export const apiErrorInterceptor: HttpInterceptorFn = (req, next) => {
             // consulted — it lives in localStorage and outlives the cookie,
             // which used to strand users on "not authenticated" error pages
             // instead of taking them back through the login flow.
-            if (!isAuthCall && !router.url.startsWith('/login')) {
-              auth.setUser(null); // drop the stale cached identity
-              // Carry the interrupted destination so login can return the
-              // user there instead of the role default (standard returnUrl
-              // round-trip; login validates it as an internal path).
-              const returnUrl = router.url;
-              void router.navigate(
-                ['/login'],
-                returnUrl && returnUrl !== '/' ? { queryParams: { returnUrl } } : {},
-              );
-            }
-            break;
+            if (isAuthCall) break;
+            // A sign-in may be racing this request: wait for in-flight
+            // login/signup calls (SessionGate). If a session was established
+            // after this request was sent, the 401 is stale — retry instead
+            // of redirecting.
+            return from(gate.whenIdle()).pipe(
+              switchMap(() => {
+                if (gate.epoch !== sentAtEpoch) return next(req);
+                if (!router.url.startsWith('/login')) {
+                  auth.setUser(null); // drop the stale cached identity
+                  // Carry the interrupted destination so login can return the
+                  // user there instead of the role default (standard returnUrl
+                  // round-trip; login validates it as an internal path).
+                  const returnUrl = router.url;
+                  void router.navigate(
+                    ['/login'],
+                    returnUrl && returnUrl !== '/' ? { queryParams: { returnUrl } } : {},
+                  );
+                }
+                return throwError(() => err);
+              }),
+            );
           }
           case 403:
             toast.show(

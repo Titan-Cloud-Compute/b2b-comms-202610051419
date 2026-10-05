@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from './api-client.service';
+import { SessionGate } from './session-gate.service';
 
 export interface ImpersonationIdentity {
   id: string;
@@ -57,13 +58,14 @@ export interface RegistrationTokenPreview {
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
   private api = inject(ApiClient);
+  private gate = inject(SessionGate);
 
   signup(input: SignupInput): Promise<AuthUser> {
-    return this.api.post<AuthUser>('auth/signup', input);
+    return this.gate.track(this.api.post<AuthUser>('auth/signup', input));
   }
 
   login(input: LoginInput): Promise<AuthUser> {
-    return this.api.post<AuthUser>('auth/login', input);
+    return this.gate.track(this.api.post<AuthUser>('auth/login', input));
   }
 
   /**
