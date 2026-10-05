@@ -20,9 +20,9 @@ import { RouterLink } from '@angular/router';
 
       <main class="landing-main">
         <section class="landing-hero">
-          <h1 class="landing-title" data-testid="landing-headline">B2B Vendor &amp; Customer Workspace Portal</h1>
+          <h1 class="landing-title" data-testid="landing-headline">{{ headline }}</h1>
           <p class="landing-subtitle" data-testid="landing-subheadline">Streamline onboarding, communications, and invoicing between vendors and customers in one place.</p>
-          <a routerLink="/dashboard" class="btn-primary" data-testid="landing-cta-primary">Get Started</a>
+          <a routerLink="/dashboard" class="btn-primary" data-testid="landing-cta-admin">Get Started</a>
         </section>
 
         <section class="landing-benefits" aria-label="Highlights">
@@ -34,7 +34,6 @@ import { RouterLink } from '@angular/router';
         </section>
 
         <section class="landing-roles" aria-label="Get started by role">
-          <a routerLink="/dashboard" class="btn-primary" data-testid="landing-cta-admin">Get Started</a>
           <a routerLink="/orders" class="btn-outline" data-testid="landing-cta-vendor">View Orders</a>
           <a routerLink="/invoices" class="btn-outline" data-testid="landing-cta-customer">Track Invoices</a>
         </section>
@@ -45,6 +44,7 @@ import { RouterLink } from '@angular/router';
         <nav class="landing-footer-links">
           <a routerLink="/terms" class="link-secondary">Terms</a>
           <a routerLink="/privacy" class="link-secondary">Privacy</a>
+          <a routerLink="/about" class="link-secondary">About</a>
         </nav>
       </footer>
     </div>
@@ -119,7 +119,7 @@ import { RouterLink } from '@angular/router';
       margin-bottom: 2.5rem;
     }
     .landing-title {
-      font-size: 2.25rem;
+      font-size: clamp(1.75rem, 4vw + 0.5rem, 3rem);
       line-height: 1.2;
       font-weight: 700;
       margin: 0 0 0.75rem;
@@ -159,7 +159,7 @@ import { RouterLink } from '@angular/router';
     }
     .landing-benefits {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
       gap: 1rem;
       margin-bottom: 2.5rem;
     }
@@ -177,25 +177,14 @@ import { RouterLink } from '@angular/router';
     }
     .landing-roles {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 0.75rem;
-      align-items: stretch;
-    }
-    @media (min-width: 768px) {
-      .landing-title {
-        font-size: 2.75rem;
-      }
-      .landing-benefits {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      .landing-roles {
-        flex-direction: row;
-        justify-content: center;
-      }
+      justify-content: center;
     }
   `]
 })
 export class LandingComponent {
+  readonly headline = 'B2B Vendor & Customer Workspace Portal';
   readonly highlights = [
     { id: 'landing-highlight-0', text: 'Shared channels for real-time vendor-customer communication' },
     { id: 'landing-highlight-1', text: 'Integrated invoice management and approval workflows' },
