@@ -23,10 +23,7 @@ import { environment } from '../../environments/environment';
     <div class="signup-container">
       <div class="signup-card">
         <div class="logo">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <rect width="48" height="48" rx="12" style="fill: var(--color-primary)"/>
-            <path d="M14 24L22 32L34 16" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <img src="brand/logo.svg" alt="" width="48" height="48" class="auth-logo">
         </div>
         <h1>Create Account</h1>
         <p class="subtitle">Join the Vendor and Customer Workspace Portal</p>
