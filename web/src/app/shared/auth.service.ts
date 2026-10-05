@@ -8,11 +8,18 @@ export interface User {
   email: string;
   name: string;
   firmName?: string;
-  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'MANAGER' | 'VENDOR' | 'CUSTOMER';
   firmId?: string;
 }
 
-const ROLES: readonly User['role'][] = ['USER', 'ADMIN', 'SUPER_ADMIN'];
+const ROLES: readonly User['role'][] = [
+  'USER',
+  'ADMIN',
+  'SUPER_ADMIN',
+  'MANAGER',
+  'VENDOR',
+  'CUSTOMER',
+];
 
 /**
  * Parse a persisted user, returning null for anything that is not a valid

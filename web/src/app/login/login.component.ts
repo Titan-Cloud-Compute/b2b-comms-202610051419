@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { AuthService } from '../shared/auth.service';
+import { AuthService, User } from '../shared/auth.service';
 import { StickyFooterComponent } from '../shared/sticky-footer.component';
 import { AuthApi } from '../shared/api/auth-api.service';
 import {
@@ -64,37 +64,15 @@ import { PREVIEW_MODE } from '../shared/preview/preview-mode';
 
             <div class="form-group">
               <label for="password">{{ 'Password' }}</label>
-              <div class="password-row">
-                <input
-                  [type]="showPassword() ? 'text' : 'password'"
-                  id="password"
-                  [(ngModel)]="password"
-                  name="password"
-                  placeholder="••••••••"
-                  required
-                  autocomplete="current-password"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  (click)="showPassword.set(!showPassword())"
-                  [attr.aria-label]="showPassword() ? ('Hide password') : ('Show password')"
-                  [attr.title]="showPassword() ? ('Hide password') : ('Show password')"
-                  [attr.aria-pressed]="showPassword()"
-                >
-                  @if (showPassword()) {
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                      <line x1="1" y1="1" x2="23" y2="23"/>
-                    </svg>
-                  } @else {
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  }
-                </button>
-              </div>
+              <input
+                type="password"
+                id="password"
+                [(ngModel)]="password"
+                name="password"
+                placeholder="••••••••"
+                required
+                autocomplete="current-password"
+              />
               <a routerLink="/forgot-password" class="forgot-link">{{ 'Forgot password?' }}</a>
               @if (passwordError()) {
                 <small class="field-error">{{ passwordError() }}</small>
@@ -132,7 +110,6 @@ export class LoginComponent {
   emailError = signal<string | null>(null);
   passwordError = signal<string | null>(null);
   isLoading = signal(false);
-  showPassword = signal(false);
 
   /** True only in the static design-review build (see preview-mode.ts). */
   previewMode = PREVIEW_MODE;
@@ -199,7 +176,7 @@ export class LoginComponent {
       // on the layout route is the single source of truth and bounces
       // unfinished-intake users back to their spot in the conversation.
       if (this.auth.hasAdminRole()) {
-        this.router.navigate(['/admin/overview']);
+        this.router.navigate(['/admin/customers']);
       } else {
         // returnUrl round-trip: when the session-expiry redirect carried the
         // interrupted destination (e.g. /integrations), resume there instead
@@ -249,17 +226,21 @@ export class LoginComponent {
             role: 'USER',
           },
     );
-    this.router.navigate([isAdmin ? '/admin/overview' : '/dashboard']);
+    this.router.navigate([isAdmin ? '/admin/customers' : '/dashboard']);
   }
 
-  private mapRole(
-    backendRole: string,
-  ): 'USER' | 'ADMIN' | 'SUPER_ADMIN' {
+  private mapRole(backendRole: string): User['role'] {
     switch (backendRole) {
       case 'ADMIN':
         return 'ADMIN';
       case 'SUPER_ADMIN':
         return 'SUPER_ADMIN';
+      case 'MANAGER':
+        return 'MANAGER';
+      case 'VENDOR':
+        return 'VENDOR';
+      case 'CUSTOMER':
+        return 'CUSTOMER';
       default:
         return 'USER';
     }

@@ -160,11 +160,11 @@ export class AuthService {
     const isBootstrap = count === 0;
 
     let grantedModelIds: string[] = [];
-    if (!isBootstrap) {
-      const rawToken = args.registrationToken?.trim().toLowerCase();
-      if (!rawToken) {
-        throw new BadRequestException('registration token is required');
-      }
+    // Self-service signup: no registration token is required. A token, when
+    // supplied, is still redeemed (and must be valid).
+    const rawToken = args.registrationToken?.trim().toLowerCase();
+    const usesToken = !isBootstrap && !!rawToken;
+    if (usesToken && rawToken) {
       const regToken = await this.prisma.runAsAdmin((tx) =>
         tx.registrationToken.findUnique({ where: { token: rawToken } }),
       );
@@ -181,7 +181,12 @@ export class AuthService {
       grantedModelIds = claimed.grantedModelIds;
     }
 
-    const role = isBootstrap ? 'ADMIN' : 'USER';
+    // Bootstrap → ADMIN; invited (token) → USER; self-service → VENDOR.
+    const role: UserRole = isBootstrap
+      ? UserRole.ADMIN
+      : usesToken
+        ? UserRole.USER
+        : UserRole.VENDOR;
     const passwordHash = await bcrypt.hash(args.password, 10);
 
     let user: User;
@@ -198,8 +203,7 @@ export class AuthService {
       throw err;
     }
 
-    if (!isBootstrap && args.registrationToken) {
-      const rawToken = args.registrationToken.trim().toLowerCase();
+    if (usesToken && rawToken) {
       await this.prisma.runAsAdmin((tx) =>
         tx.registrationToken.update({
           where: { token: rawToken },

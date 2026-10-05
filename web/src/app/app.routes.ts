@@ -25,13 +25,13 @@ export const routes: Routes = [
   },
   {
     path: 'signup',
-    redirectTo: 'signup/1',
-    pathMatch: 'full'
+    loadComponent: () => import('./signup/signup.component').then(m => m.SignupComponent),
+    data: { hideSupportFooter: true }
   },
   {
+    // Legacy two-step URLs (/signup/1, /signup/2) now land on the single step.
     path: 'signup/:step',
-    loadComponent: () => import('./signup/signup.component').then(m => m.SignupComponent),
-    data: { hideSupportFooter: ['1'] }
+    redirectTo: 'signup'
   },
   {
     path: 'terms',

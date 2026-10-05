@@ -11,7 +11,13 @@ export interface ImpersonationIdentity {
   impersonating: boolean;
 }
 
-export type UserRole = 'ADMIN' | 'USER' | 'SUPER_ADMIN';
+export type UserRole =
+  | 'ADMIN'
+  | 'USER'
+  | 'SUPER_ADMIN'
+  | 'MANAGER'
+  | 'VENDOR'
+  | 'CUSTOMER';
 
 export interface AuthUser {
   id: string;
