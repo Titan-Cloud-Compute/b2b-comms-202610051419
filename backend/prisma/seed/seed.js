@@ -22,6 +22,21 @@ if (!Array.isArray(accounts)) {
   process.exit(1);
 }
 
+// Spec demo accounts referenced by the auth-entry journey specs
+// (web/e2e/journeys/*/login.spec.ts). Appended unless already listed so a
+// re-seed also repairs existing rows (role + passwordHash are upserted).
+const SPEC_DEMO_ACCOUNTS = [
+  { email: 'admin@b2b-portal.example.com', password: 'password', role: 'ADMIN', loginPath: '/login' },
+  { email: 'vendor@acme.example.com', password: 'password', role: 'VENDOR', loginPath: '/login' },
+  { email: 'buyer@corp.example.com', password: 'password', role: 'CUSTOMER', loginPath: '/login' },
+];
+for (const spec of SPEC_DEMO_ACCOUNTS) {
+  const listed = accounts.some(
+    (a) => a && typeof a.email === 'string' && a.email.toLowerCase() === spec.email,
+  );
+  if (!listed) accounts.push(spec);
+}
+
 // Database URL is required for PrismaClient / PrismaPg adapter.
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
