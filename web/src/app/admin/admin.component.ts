@@ -17,7 +17,7 @@ type AdminTab = 'overview' | 'users' | 'app-settings';
     AdminUsersComponent,
   ],
   template: `
-    <div class="admin-page" data-placeholder>
+    <div class="page admin-page" data-placeholder>
       <header class="page-header">
         <div>
           <h1>{{ getTabTitle() }}</h1>
@@ -62,22 +62,6 @@ type AdminTab = 'overview' | 'users' | 'app-settings';
       min-height: 0;
       display: flex;
       flex-direction: column;
-    }
-
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-      flex: 0 0 auto;
-    }
-
-    h1 {
-      font-size: var(--font-size-xl);
-      color: var(--color-text-primary);
-      margin-bottom: 0.25rem;
     }
 
     .subtitle {

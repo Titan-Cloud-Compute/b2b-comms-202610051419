@@ -63,6 +63,11 @@
   border-color: var(--color-on-primary-muted);
 }
 
+.auth-logo {
+  display: block;
+  margin: 0 auto var(--space-4);
+}
+
 .form-title {
   font-size: var(--font-size-xl);
   font-weight: 600;

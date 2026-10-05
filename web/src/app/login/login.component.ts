@@ -34,6 +34,7 @@ import { environment } from '../../environments/environment';
              single action on this screen. -->
       <div class="form-panel">
         <div class="form-container">
+          <img src="brand/logo.svg" alt="" width="40" height="40" class="auth-logo">
           <h2 class="form-title">{{ 'Sign In' }}</h2>
           <p class="form-subtitle">{{ 'Access your company profile' }}</p>
 

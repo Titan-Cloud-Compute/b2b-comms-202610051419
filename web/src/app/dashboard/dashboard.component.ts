@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <div class="dashboard-page" data-placeholder>
+    <div class="page dashboard-page" data-placeholder>
       <header class="page-header">
         <h1>Dashboard</h1>
         <p class="subtitle">Welcome to the platform.</p>
@@ -32,14 +32,6 @@ import { FormsModule } from '@angular/forms';
       max-width: 800px;
       margin: 0 auto;
       padding: 2rem 1rem;
-    }
-    .page-header {
-      margin-bottom: 2rem;
-    }
-    h1 {
-      font-size: var(--font-size-xl);
-      color: var(--color-text-primary);
-      margin: 0 0 0.25rem;
     }
     .subtitle {
       color: var(--color-text-secondary);
