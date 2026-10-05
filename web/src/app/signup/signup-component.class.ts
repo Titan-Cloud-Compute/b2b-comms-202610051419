@@ -1,14 +1,18 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService, User } from '../shared/auth.service';
 import { AuthApi } from '../shared/api/auth-api.service';
-import { BadRequestError, ConflictError } from '../shared/api/api-errors';
+import { ConflictError, BadRequestError } from '../shared/api/api-errors';
+import { ToastService } from '../shared/api/toast.service';
+import { PREVIEW_MODE } from '../shared/preview/preview-mode';
+import { environment } from '../../environments/environment';
 
 /**
- * Self-service sign-up: a single step with one Email field, one Password
- * field and one submit button. The server creates the account (new accounts
- * get the VENDOR role); on success the page shows "Account created".
+ * Self-service sign-up: one step, email + password. Open to anyone; the
+ * backend creates the account with role VENDOR and starts the session. On
+ * success the visitor sees "Account created" and lands on /orders.
  */
 @Component({
   selector: 'app-signup',
@@ -25,13 +29,9 @@ import { BadRequestError, ConflictError } from '../shared/api/api-errors';
           </svg>
         </div>
         <h1>Create Account</h1>
-        <p class="subtitle">Join the Enterprise Platform</p>
+        <p class="subtitle">Join the Vendor and Customer Workspace Portal</p>
 
-        @if (created()) {
-          <div class="success-message" role="status">Account created</div>
-        }
-
-        <form (ngSubmit)="onSignup()" class="signup-form">
+        <form (ngSubmit)="onSignup()" class="signup-form" novalidate>
           @if (error()) {
             <div class="error-message" role="alert">{{ error() }}</div>
           }
@@ -67,18 +67,14 @@ import { BadRequestError, ConflictError } from '../shared/api/api-errors';
               <span class="spinner"></span>
               Creating account...
             } @else {
-              Sign up
+              Create account
             }
           </button>
         </form>
 
-        <div class="divider">
-          <span>or</span>
-        </div>
-
         <p class="login-link">
           Already have an account?
-          <a routerLink="/login">Sign in</a>
+          <a routerLink="/login">Log in</a>
         </p>
       </div>
     </div>
@@ -89,25 +85,24 @@ export class SignupComponent {
   password = '';
   error = signal<string | null>(null);
   isLoading = signal(false);
-  created = signal(false);
 
+  private auth = inject(AuthService);
   private authApi = inject(AuthApi);
+  private toast = inject(ToastService);
+  private router = inject(Router);
 
   async onSignup() {
     this.error.set(null);
-    this.created.set(false);
+    const email = this.email.trim();
 
-    if (!this.email || !this.password) {
-      this.error.set('Please fill in all fields');
+    if (!email || !this.password) {
+      this.error.set('Please enter your email and password');
       return;
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(this.email.trim())) {
+    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
       this.error.set('Please enter a valid email address');
       return;
     }
-
     if (this.password.length < 8) {
       this.error.set('Password must be at least 8 characters');
       return;
@@ -115,17 +110,23 @@ export class SignupComponent {
 
     this.isLoading.set(true);
     try {
-      await this.authApi.signup({
-        email: this.email.trim(),
-        password: this.password,
-      });
-      this.created.set(true);
-      this.password = '';
+      let user: Pick<User, 'id' | 'email' | 'role'>;
+      if (PREVIEW_MODE || environment.useMocks) {
+        // Hermetic / preview build: there is no backend to call, so the new
+        // account (role VENDOR, same as the server default) is created locally.
+        user = { id: 'preview-' + email, email, role: 'VENDOR' };
+      } else {
+        const result = await this.authApi.signup({ email, password: this.password });
+        user = { id: result.id, email: result.email, role: result.role };
+      }
+      this.auth.setUser({ ...user, name: email.split('@')[0] });
+      this.toast.show('Account created', 'success');
+      void this.router.navigate(['/orders']);
     } catch (err) {
       if (err instanceof ConflictError) {
         this.error.set('An account with this email already exists');
       } else if (err instanceof BadRequestError) {
-        this.error.set('Invalid signup data');
+        this.error.set('Please check your email and password');
       } else {
         this.error.set('Signup failed. Please try again.');
       }

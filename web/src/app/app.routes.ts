@@ -31,7 +31,7 @@ export const routes: Routes = [
   {
     // Legacy two-step URLs (/signup/1, /signup/2) now land on the single step.
     path: 'signup/:step',
-    redirectTo: 'signup'
+    redirectTo: 'signup',
   },
   {
     path: 'terms',

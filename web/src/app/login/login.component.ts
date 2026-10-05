@@ -11,6 +11,7 @@ import {
   BadRequestError,
 } from '../shared/api/api-errors';
 import { PREVIEW_MODE } from '../shared/preview/preview-mode';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -90,6 +91,7 @@ import { PREVIEW_MODE } from '../shared/preview/preview-mode';
           </form>
 
           <div class="signup-link">
+            <p>No account yet? <a routerLink="/signup">Sign up</a></p>
             <p class="about-link">
               <a routerLink="/about">{{ 'About this platform' }}</a>
             </p>
@@ -153,7 +155,7 @@ export class LoginComponent {
     // a generic error. validate() has already required a non-empty,
     // address-shaped email and a non-empty password — in the preview that IS
     // the whole credential check, resolved here in the client.
-    if (PREVIEW_MODE) {
+    if (PREVIEW_MODE || environment.useMocks) {
       this.previewSignIn();
       return;
     }
@@ -172,23 +174,7 @@ export class LoginComponent {
         name: result.email.split('@')[0],
         role: this.mapRole(result.role),
       });
-      // Route based on role.
-      // on the layout route is the single source of truth and bounces
-      // unfinished-intake users back to their spot in the conversation.
-      if (this.auth.hasAdminRole()) {
-        this.router.navigate(['/admin/customers']);
-      } else {
-        // returnUrl round-trip: when the session-expiry redirect carried the
-        // interrupted destination (e.g. /integrations), resume there instead
-        // of the default. INTERNAL paths only — '/x...' but not '//x' — so
-        // the query param can never become an open redirect.
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-        if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
-          this.router.navigateByUrl(returnUrl);
-        } else {
-          this.router.navigate(['/dashboard']);
-        }
-      }
+      this.routeForRole();
     } catch (err) {
       if (err instanceof UnauthorizedError) {
         this.error.set(
@@ -209,41 +195,58 @@ export class LoginComponent {
   }
 
   /**
-   * Preview-only sign-in: set the session locally and go to the authenticated
-   * home. An address containing "admin" lands on the admin overview so both
-   * shells stay reviewable from the one form.
+   * Role-based landing: admins go to customer management, everyone else
+   * (vendor, customer, user) to /orders. A safe internal returnUrl from the
+   * session-expiry redirect wins for non-admins.
+   */
+  private routeForRole() {
+    if (this.auth.hasAdminRole()) {
+      this.router.navigate(['/admin/customers']);
+      return;
+    }
+    // INTERNAL paths only — '/x...' but not '//x' — so the query param can
+    // never become an open redirect.
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      this.router.navigate(['/orders']);
+    }
+  }
+
+  /**
+   * Preview/hermetic-only sign-in (no backend): set the session locally. The
+   * demo seed accounts map to their roles; any other address containing
+   * "admin" is an admin, everything else a customer.
    */
   private previewSignIn() {
-    const isAdmin = /admin/i.test(this.email);
-    const name = this.email.split('@')[0];
-    this.auth.setUser(
-      isAdmin
-        ? { id: 'preview-admin', email: this.email, name, role: 'ADMIN' }
-        : {
-            id: 'preview-user',
-            email: this.email,
-            name,
-            role: 'USER',
-          },
-    );
-    this.router.navigate([isAdmin ? '/admin/customers' : '/dashboard']);
+    const email = this.email.trim().toLowerCase();
+    const seeded: Record<string, User['role']> = {
+      'admin@b2b-portal.example.com': 'ADMIN',
+      'vendor@acme.example.com': 'VENDOR',
+      'buyer@corp.example.com': 'CUSTOMER',
+    };
+    const role: User['role'] =
+      seeded[email] ?? (/admin/i.test(email) ? 'ADMIN' : 'CUSTOMER');
+    this.auth.setUser({
+      id: 'preview-' + role.toLowerCase(),
+      email,
+      name: email.split('@')[0],
+      role,
+    });
+    this.routeForRole();
   }
 
   private mapRole(backendRole: string): User['role'] {
     switch (backendRole) {
       case 'ADMIN':
-        return 'ADMIN';
       case 'SUPER_ADMIN':
-        return 'SUPER_ADMIN';
       case 'MANAGER':
-        return 'MANAGER';
       case 'VENDOR':
-        return 'VENDOR';
       case 'CUSTOMER':
-        return 'CUSTOMER';
+        return backendRole;
       default:
         return 'USER';
     }
   }
-
 }

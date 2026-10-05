@@ -26,8 +26,8 @@ export interface SignupArgs {
   email: string;
   password: string;
   name?: string;
-  /** 48-char hex registration token issued by an admin. Required for all
-   *  signups after the first (bootstrap) user. */
+  /** Optional 48-char hex registration token issued by an admin. Self-service
+   *  signup does not require one. */
   registrationToken?: string;
 }
 export interface LoginArgs {
@@ -36,7 +36,7 @@ export interface LoginArgs {
 }
 
 /**
- * Auth flows: signup (first user → ADMIN, otherwise USER), login, logout.
+ * Auth flows: signup (first user → ADMIN, otherwise self-service VENDOR), login, logout.
  *
  * Password hashing uses bcryptjs (cost 10, OWASP-acceptable baseline). The choice
  * to count *all* users (not just admins) when deciding the bootstrap admin
@@ -159,19 +159,12 @@ export class AuthService {
     const count = await this.prisma.runAsAdmin((tx) => tx.user.count());
     const isBootstrap = count === 0;
 
+    // Self-service signup is open: no registration token is required. A token,
+    // when supplied, is still claimed so its model grant applies.
     let grantedModelIds: string[] = [];
-    // Self-service signup: no registration token is required. A token, when
-    // supplied, is still redeemed (and must be valid).
     const rawToken = args.registrationToken?.trim().toLowerCase();
     const usesToken = !isBootstrap && !!rawToken;
     if (usesToken && rawToken) {
-      const regToken = await this.prisma.runAsAdmin((tx) =>
-        tx.registrationToken.findUnique({ where: { token: rawToken } }),
-      );
-      if (!regToken || regToken.consumed) {
-        throw new BadRequestException('invalid or already-used registration token');
-      }
-
       const claimed = await this.claimRegistrationToken(rawToken);
       if (!claimed) {
         throw new BadRequestException(
