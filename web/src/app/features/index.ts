@@ -21,7 +21,7 @@ FEATURE_ROUTES.push(
   { path: 'admin/customers', loadComponent: () => import('./admin-customers/admin-customers.component').then(m => m.AdminCustomersComponent) },
   { path: 'channels', loadComponent: () => import('./channels/channels.component').then(m => m.ChannelsComponent) },
   { path: 'orders', loadComponent: () => import('./order-management/order-management.component').then(m => m.OrderManagementComponent) },
-  { path: 'invoices', loadComponent: () => import('./invoices/invoices.component').then(m => m.InvoicesComponent) },
+  { path: 'invoices', loadComponent: () => import('./invoice-generation/invoice-generation.component').then(m => m.InvoiceGenerationComponent) },
   { path: 'settings/notifications', loadComponent: () => import('./notification-preferences/notification-preferences.component').then(m => m.NotificationPreferencesComponent) },
   { path: 'admin/audit-log', loadComponent: () => import('./admin-audit-log/admin-audit-log.component').then(m => m.AdminAuditLogComponent) },
 );
