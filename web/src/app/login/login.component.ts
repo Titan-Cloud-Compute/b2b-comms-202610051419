@@ -1,4 +1,4 @@
-import { Component, signal, inject, computed } from '@angular/core';
+import { Component, signal, inject, computed, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -120,9 +120,11 @@ export class LoginComponent {
   auth = inject(AuthService);
   private authApi = inject(AuthApi);
   private route = inject(ActivatedRoute);
+  private destroyed = false;
 
-
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    inject(DestroyRef).onDestroy(() => { this.destroyed = true; });
+  }
 
   private validate(): boolean {
     let ok = true;
@@ -201,6 +203,9 @@ export class LoginComponent {
    * session-expiry redirect wins for non-admins.
    */
   private routeForRole() {
+    // The user already left /login, so a late login response must not hijack
+    // their navigation (card 13b76614).
+    if (this.destroyed) return;
     if (this.auth.hasAdminRole()) {
       this.router.navigate(['/admin/customers']);
       return;
